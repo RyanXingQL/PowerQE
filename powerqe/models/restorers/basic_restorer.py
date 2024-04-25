@@ -59,7 +59,14 @@ class BasicQERestorer(BasicRestorer):
         )
 
     def forward_test(
-        self, lq, gt=None, meta=None, save_image=False, save_path=None, iteration=None
+        self,
+        lq,
+        gt=None,
+        meta=None,
+        save_image=False,
+        save_float32=False,
+        save_path=None,
+        iteration=None,
     ):
         """Test forward.
 
@@ -73,16 +80,12 @@ class BasicQERestorer(BasicRestorer):
 
         Args:
             lq (Tensor): LQ image with the shape of (N=1, C, H, W).
-            gt (Tensor): GT image with the shape of (N=1, C, H, W).
-                Default: None.
-            meta (list): Meta information of samples.
-                Default: None.
-            save_image (bool): Whether to save image.
-                Default: False.
-            save_path (str): Path to save image.
-                Default: None.
-            iteration (int): Iteration for the saving image name.
-                Default: None.
+            gt (Tensor): GT image with the shape of (N=1, C, H, W). Default: None.
+            meta (list): Meta information of samples. Default: None.
+            save_image (bool): Whether to save image. Default: False.
+            save_float32 (bool): Whether to save float32. Default: False.
+            save_path (str): Path to save image. Default: None.
+            iteration (int): Iteration for the saving image name. Default: None.
 
         Returns:
             dict[dict]: A dict with a single key-value pair.
@@ -170,7 +173,12 @@ class BasicQERestorer(BasicRestorer):
                     f' received "{type(iteration)}".'
                 )
 
-            mmcv.imwrite(tensor2img(output), _save_path)
+            if save_float32:
+                np.save(
+                    _save_path[:-3] + "npy", tensor2img(output, out_type=np.float32)
+                )
+            else:
+                mmcv.imwrite(tensor2img(output), _save_path)
 
         # Evaluation
         results = dict(eval_result=self.evaluate(output=output, gt=gt))
@@ -300,7 +308,14 @@ class BasicVQERestorer(BasicRestorer):
         return eval_result
 
     def forward_test(
-        self, lq, gt=None, meta=None, save_image=False, save_path=None, iteration=None
+        self,
+        lq,
+        gt=None,
+        meta=None,
+        save_image=False,
+        save_float32=False,
+        save_path=None,
+        iteration=None,
     ):
         """Test forward.
 
@@ -313,6 +328,7 @@ class BasicVQERestorer(BasicRestorer):
                 or (N=1, C, H, W). Default: None.
             meta (list): Meta information of samples. Default: None.
             save_image (bool): Whether to save image. Default: False.
+            save_float32 (bool): Whether to save float32. Default: False.
             save_path (str): Path to save image. Default: None.
             iteration (int): Iteration for the saving image name.
                 Default: None.
@@ -326,6 +342,11 @@ class BasicVQERestorer(BasicRestorer):
         assert self.test_cfg is not None, ValueError(
             '"self.test_cfg" should be provided; received None.'
         )
+
+        if save_float32:
+            raise NotImplementedError(
+                "saving as float32 is not supported for video tensor."
+            )
 
         assert len(lq) == 1, (
             "Only one sample is allowed per batch to"

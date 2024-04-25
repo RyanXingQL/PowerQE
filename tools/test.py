@@ -40,6 +40,10 @@ def parse_args():
         type=str,
         help="path to store images and if not given, will not save image",
     )
+    parser.add_argument(
+        "--save-float32",
+        action="store_true",
+    )
     parser.add_argument("--tmpdir", help="tmp dir for writing some results")
     parser.add_argument(
         "--cfg-options",
@@ -117,7 +121,11 @@ def main():
         _ = load_checkpoint(model, args.checkpoint, map_location="cpu")
         model = MMDataParallel(model, device_ids=[0])
         outputs = single_gpu_test(
-            model, data_loader, save_path=args.save_path, save_image=args.save_image
+            model,
+            data_loader,
+            save_path=args.save_path,
+            save_image=args.save_image,
+            save_float32=args.save_float32,
         )
     else:
         find_unused_parameters = cfg.get("find_unused_parameters", False)
@@ -141,6 +149,7 @@ def main():
             args.gpu_collect,
             save_path=args.save_path,
             save_image=args.save_image,
+            save_float32=args.save_float32,
             empty_cache=empty_cache,
         )
 
