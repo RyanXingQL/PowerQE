@@ -8,8 +8,9 @@ lr_config = dict(
     policy="CosineRestart", by_epoch=False, periods=[total_iters], min_lr=1e-7
 )
 
+ckp_inter = total_iters // 100
 val_inter = total_iters // 10
-checkpoint_config = dict(interval=val_inter, save_optimizer=True, by_epoch=False)
+checkpoint_config = dict(interval=ckp_inter, save_optimizer=True, by_epoch=False)
 evaluation = dict(interval=val_inter, save_image=False, gpu_collect=True)
 log_config = dict(
     interval=100,
