@@ -11,11 +11,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
 import torch
 import torch.nn.functional as nn_func
 from mmedit.models.backbones import BasicVSRPlusPlus
 from mmedit.models.common import flow_warp
-from mmedit.models.registry import BACKBONES
+from ..registry import BACKBONES
 
 
 @BACKBONES.register_module()
@@ -172,6 +173,13 @@ class ProVQE(BasicVSRPlusPlus):
                 lqs.view(-1, c, h, w), scale_factor=0.25, mode="bicubic"
             ).view(n, t, c, h // 4, w // 4)
 
+        # compute optical flow using the low-res inputs
+        assert lqs_downsample.size(3) >= 64 and lqs_downsample.size(4) >= 64, (
+            "The height and width of LR inputs must be at least 64, "
+            f"but got {h} and {w}."
+        )
+        flows_forward, flows_backward = self.compute_flow(lqs_downsample)
+
         # check whether the input is an extended sequence
         self.check_if_mirror_extended(lqs)
 
@@ -190,13 +198,6 @@ class ProVQE(BasicVSRPlusPlus):
             feats["spatial"] = [
                 feats_[:, i, :, :, :] for i in range(0, t)
             ]  # [t * (n, c, h, w)]
-
-        # compute optical flow using the low-res inputs
-        assert lqs_downsample.size(3) >= 64 and lqs_downsample.size(4) >= 64, (
-            "The height and width of LR inputs must be at least 64, "
-            f"but got {h} and {w}."
-        )
-        flows_forward, flows_backward = self.compute_flow(lqs_downsample)
 
         # feature propagation
         for iter_ in [1, 2]:
