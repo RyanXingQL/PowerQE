@@ -209,6 +209,13 @@ if __name__ == "__main__":
     # Record video information
     if args.dataset == "vimeo-triplet":
         src_root = "data/vimeo_triplet/sequences"
+        planar_root = "tmp/vimeo_triplet_planar"
+        skip_planar = False
+        if osp.exists(planar_root):
+            skip_planar = (
+                input(f"{planar_root} exists. Skip generating planar? (y/n) ") == "y"
+            )
+            assert skip_planar, "Please remove the existing planar directory."
 
         subdirs = glob(os.path.join(src_root, "*/"))
         subdirs = [subdir.split("/")[-2] for subdir in subdirs]
@@ -216,15 +223,16 @@ if __name__ == "__main__":
         vids = []
         for subdir in subdirs:
             src_dir = osp.join(src_root, subdir)
-            planar_dir = osp.join("tmp/vimeo_triplet_planar", subdir)
-            bit_dir = osp.join("tmp/vimeo_triplet_bit/hm18.0/ldp/qp37", subdir)
+            planar_dir = osp.join(planar_root, subdir)
+            bit_dir = osp.join(f"tmp/vimeo_triplet_bit/hm18.0/ldp/qp{args.qp}", subdir)
             log_dir = bit_dir
             comp_planar_dir = osp.join(
-                "tmp/vimeo_triplet_comp_planar/hm18.0/ldp/qp37", subdir
+                f"tmp/vimeo_triplet_comp_planar/hm18.0/ldp/qp{args.qp}", subdir
             )
-            tar_dir = osp.join("data/vimeo_triplet_lq/hm18.0/ldp/qp37", subdir)
+            tar_dir = osp.join(f"data/vimeo_triplet_lq/hm18.0/ldp/qp{args.qp}", subdir)
 
-            os.makedirs(planar_dir)
+            if not skip_planar:
+                os.makedirs(planar_dir)
             os.makedirs(bit_dir)
             # os.makedirs(log_dir)
             os.makedirs(comp_planar_dir)
@@ -265,6 +273,13 @@ if __name__ == "__main__":
 
     if args.dataset == "vimeo-septuplet":
         src_root = "data/vimeo_septuplet/sequences"
+        planar_root = "tmp/vimeo_septuplet_planar"
+        skip_planar = False
+        if osp.exists(planar_root):
+            skip_planar = (
+                input(f"{planar_root} exists. Skip generating planar? (y/n) ") == "y"
+            )
+            assert skip_planar, "Please remove the existing planar directory."
 
         subdirs = glob(os.path.join(src_root, "*/"))
         subdirs = [subdir.split("/")[-2] for subdir in subdirs]
@@ -272,15 +287,20 @@ if __name__ == "__main__":
         vids = []
         for subdir in subdirs:
             src_dir = osp.join(src_root, subdir)
-            planar_dir = osp.join("tmp/vimeo_septuplet_planar", subdir)
-            bit_dir = osp.join("tmp/vimeo_septuplet_bit/hm18.0/ldp/qp37", subdir)
+            planar_dir = osp.join(planar_root, subdir)
+            bit_dir = osp.join(
+                f"tmp/vimeo_septuplet_bit/hm18.0/ldp/qp{args.qp}", subdir
+            )
             log_dir = bit_dir
             comp_planar_dir = osp.join(
-                "tmp/vimeo_septuplet_comp_planar/hm18.0/ldp/qp37", subdir
+                f"tmp/vimeo_septuplet_comp_planar/hm18.0/ldp/qp{args.qp}", subdir
             )
-            tar_dir = osp.join("data/vimeo_septuplet_lq/hm18.0/ldp/qp37", subdir)
+            tar_dir = osp.join(
+                f"data/vimeo_septuplet_lq/hm18.0/ldp/qp{args.qp}", subdir
+            )
 
-            os.makedirs(planar_dir)
+            if not skip_planar:
+                os.makedirs(planar_dir)
             os.makedirs(bit_dir)
             # os.makedirs(log_dir)
             os.makedirs(comp_planar_dir)
@@ -324,10 +344,12 @@ if __name__ == "__main__":
         for subdir in ["train", "test"]:
             src_dir = osp.join("data/mfqev2", subdir)
             planar_dir = osp.join("data/mfqev2_planar", subdir)
-            bit_dir = osp.join("tmp/mfqev2_bit/hm18.0/ldp/qp37", subdir)
+            bit_dir = osp.join(f"tmp/mfqev2_bit/hm18.0/ldp/qp{args.qp}", subdir)
             log_dir = bit_dir
-            comp_planar_dir = osp.join("tmp/mfqev2_comp_planar/hm18.0/ldp/qp37", subdir)
-            tar_dir = osp.join("data/mfqev2_lq/hm18.0/ldp/qp37", subdir)
+            comp_planar_dir = osp.join(
+                f"tmp/mfqev2_comp_planar/hm18.0/ldp/qp{args.qp}", subdir
+            )
+            tar_dir = osp.join(f"data/mfqev2_lq/hm18.0/ldp/qp{args.qp}", subdir)
 
             os.makedirs(bit_dir)
             # os.makedirs(log_dir)
@@ -376,7 +398,7 @@ if __name__ == "__main__":
                 )
 
     # Img -> Planar
-    if args.dataset != "mfqev2":
+    if args.dataset != "mfqev2" and (not skip_planar):
         img2planar(vids)
 
     # Compress planar
