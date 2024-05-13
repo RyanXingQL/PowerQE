@@ -156,7 +156,7 @@ class ProVQE(BasicVSRPlusPlus):
             key_frms (list[list[int]]): Key-frame annotation of samples.
 
         Returns:
-            Tensor: Output HR sequence with shape (n, t, c, 4h, 4w).
+            Tensor: Output HR sequence with shape (n, t, c, h, w) or (n, t, c, 4h, 4w).
         """
         n, t, c, h, w = lqs.size()
 
