@@ -90,6 +90,7 @@ class ProVQERestorer(BasicVQERestorer):
         gt=None,
         meta=None,
         save_image=False,
+        save_float32=False,
         save_path=None,
         iteration=None,
     ):
@@ -104,6 +105,7 @@ class ProVQERestorer(BasicVQERestorer):
                 or (N=1, C, H, W). Default: None.
             meta (list): Meta information of samples. Default: None.
             save_image (bool): Whether to save image. Default: False.
+            save_float32 (bool): Whether to save float32. Default: False.
             save_path (str): Path to save image. Default: None.
             iteration (int): Iteration for the saving image name.
                 Default: None.
@@ -118,6 +120,11 @@ class ProVQERestorer(BasicVQERestorer):
         assert (
             self.test_cfg is not None
         ), '"test_cfg" should be provided; received None.'
+
+        if save_float32:
+            raise NotImplementedError(
+                "saving as float32 is not supported for video tensor."
+            )
 
         assert len(lq) == 1, (
             "Only one sample is allowed per batch to"
