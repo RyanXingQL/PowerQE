@@ -91,7 +91,10 @@ def plot_curve(data, ylabel, smooth=False, save_path=""):
         keys = keys[window_size // 2 : -(window_size // 2)]
         values = np.convolve(values, np.ones(window_size) / window_size, mode="valid")
 
-    plt.plot(keys, values)
+    if len(keys) == 1:
+        plt.plot(keys, values, "o")
+    else:
+        plt.plot(keys, values)
     plt.xlabel("Iters")
     plt.ylabel(ylabel)
     plt.grid(True)
