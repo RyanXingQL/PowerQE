@@ -9,6 +9,8 @@ jobs:
   sync:
     runs-on: ubuntu-latest
 
+    if: github.repository_visibility == 'public'
+
     steps:
       - name: Checkout public repository
         uses: actions/checkout@v2
