@@ -1,0 +1,26 @@
+name: Sync to Private Repository
+
+on:
+  push:
+    branches:
+      - v3
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Sync to private repository
+        run: |
+          git remote add private git@github.com:ryanxingql/${{ secrets.PRIVATE_REPO_NAME }}.git
+          git push private v3
