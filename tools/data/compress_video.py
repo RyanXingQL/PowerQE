@@ -76,7 +76,7 @@ def write_ycbcr420(src_paths, tar_path, wdt, hgt):
     return tar_path
 
 
-def read_ycbcr420(src_path, tar_paths, wdt, hgt, print_dir):
+def read_ycbcr420(src_path, tar_paths, wdt, hgt, nfrms, print_dir):
     ycbcr420_nfrms = read_planar(
         src_path, fmt=((hgt, wdt), (hgt // 2, wdt // 2), (hgt // 2, wdt // 2)) * nfrms
     )
@@ -157,6 +157,7 @@ def planar2img(vids):
                 vid["tar_paths"],
                 vid["wdt"],
                 vid["hgt"],
+                vid["nfrms"],
                 _dir,
             ),
             callback=lambda x: print(x),
@@ -176,7 +177,14 @@ def planar2img_mfqev2(vids):
 
         pool.apply_async(
             func=read_ycbcr420,
-            args=(vid["planar_path"], vid["src_paths"], vid["wdt"], vid["hgt"], _dir),
+            args=(
+                vid["planar_path"],
+                vid["src_paths"],
+                vid["wdt"],
+                vid["hgt"],
+                vid["nfrms"],
+                _dir,
+            ),
             callback=lambda x: print(x),
             error_callback=lambda err: print(err),
         )
@@ -209,13 +217,16 @@ if __name__ == "__main__":
     # Record video information
     if args.dataset == "vimeo-triplet":
         src_root = "data/vimeo_triplet/sequences"
+
         planar_root = "tmp/vimeo_triplet_planar"
         skip_planar = False
         if osp.exists(planar_root):
             skip_planar = (
                 input(f"{planar_root} exists. Skip generating planar? (y/n) ") == "y"
             )
-            assert skip_planar, "Please remove the existing planar directory."
+            assert (
+                skip_planar
+            ), f"Please remove the existing planar directory {planar_root}."
 
         subdirs = glob(os.path.join(src_root, "*/"))
         subdirs = [subdir.split("/")[-2] for subdir in subdirs]
@@ -273,13 +284,16 @@ if __name__ == "__main__":
 
     if args.dataset == "vimeo-septuplet":
         src_root = "data/vimeo_septuplet/sequences"
+
         planar_root = "tmp/vimeo_septuplet_planar"
         skip_planar = False
         if osp.exists(planar_root):
             skip_planar = (
                 input(f"{planar_root} exists. Skip generating planar? (y/n) ") == "y"
             )
-            assert skip_planar, "Please remove the existing planar directory."
+            assert (
+                skip_planar
+            ), f"Please remove the existing planar directory {planar_root}."
 
         subdirs = glob(os.path.join(src_root, "*/"))
         subdirs = [subdir.split("/")[-2] for subdir in subdirs]
@@ -340,6 +354,12 @@ if __name__ == "__main__":
                 )
 
     if args.dataset == "mfqev2":
+        src_root = "data/mfqev2"
+        skip_gt = False
+        if osp.exists(src_root):
+            skip_gt = input(f"{src_root} exists. Skip generating GT? (y/n) ") == "y"
+            assert skip_gt, f"Please remove the existing GT directory {src_root}."
+
         vids = []
         for subdir in ["train", "test"]:
             src_dir = osp.join("data/mfqev2", subdir)
@@ -408,5 +428,5 @@ if __name__ == "__main__":
     planar2img(vids)
 
     # Planar -> Img for GT
-    if args.dataset == "mfqev2":
+    if args.dataset == "mfqev2" and (not skip_gt):
         planar2img_mfqev2(vids)
