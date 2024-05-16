@@ -381,7 +381,7 @@ if __name__ == "__main__":
                 res, nfrms = vid_name.split("_")[-2:]
                 wdt, hgt = res.split("x")
                 wdt, hgt, nfrms = int(wdt), int(hgt), int(nfrms)
-                if wdt < 256 or hgt < 256:
+                if subdir == "train" and (wdt < 256 or hgt < 256):
                     continue
                 if subdir == "test" and wdt > 1920:
                     continue
