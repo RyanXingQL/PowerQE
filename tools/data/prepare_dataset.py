@@ -175,7 +175,7 @@ def make_lmdb(
     ├── lock.mdb
     ├── meta_info.txt
 
-    The data.mdb and lock.mdb are standard lmdb files and you can refer to
+    The data.mdb and lock.mdb are standard lmdb files; you can refer to
     https://lmdb.readthedocs.io/en/release/ for more details.
 
     The meta_info.txt is a specified txt file to record the meta information
@@ -203,7 +203,7 @@ def make_lmdb(
         batch (int): After processing batch images, lmdb commits.
             Default: 5000.
         compress_level (int): Compress level when encoding images. Default: 1.
-        multiprocessing_read (bool): Whether use multiprocessing to read all
+        multiprocessing_read (bool): Whether to use multiprocessing to read all
             the images to memory. Default: False.
         n_thread (int): For multiprocessing.
     """

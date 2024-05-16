@@ -73,10 +73,10 @@ class BasicQERestorer(BasicRestorer):
 
         To save memory, image can be cut (or unfolded) into patches.
         Those patches can be tested separately.
-        test_cfg must contains unfolding, which is a dict contains
+        test_cfg must contain unfolding, which is a dict contains
         patchsize (patch size) and splits (number of testing splits).
 
-        For image saving, meta_keys of Collect transform should contains
+        For image saving, meta_keys of Collect transform should contain
         lq_path.
 
         Args:
