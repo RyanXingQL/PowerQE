@@ -1,3 +1,5 @@
+_base_ = "div2k_qf30.py"
+
 norm_cfg = dict(mean=[0, 0, 0], std=[1, 1, 1])
 train_pipeline = [
     dict(type="LoadImageFromFile", io_backend="disk", key="lq", channel_order="rgb"),
@@ -20,45 +22,10 @@ test_pipeline = [
     dict(type="Collect", keys=["lq", "gt"], meta_keys=["lq_path", "gt_path"]),
 ]
 
-batchsize = 32
-ngpus = 1
-assert batchsize % ngpus == 0, (
-    "Samples in a batch should better be evenly" " distributed among all GPUs."
-)
-batchsize_gpu = batchsize // ngpus
-
-dataset_type = "SRFolderDataset"
 data = dict(
-    workers_per_gpu=batchsize_gpu,
-    train_dataloader=dict(samples_per_gpu=batchsize_gpu, drop_last=True),
-    val_dataloader=dict(samples_per_gpu=1),
-    test_dataloader=dict(samples_per_gpu=1),
     train=dict(
-        type="RepeatDataset",
-        times=1000,
-        dataset=dict(
-            type=dataset_type,
-            lq_folder="data/div2k_lq/jpeg/qf30/train",
-            gt_folder="data/div2k/train",
-            pipeline=train_pipeline,
-            scale=1,
-            test_mode=False,
-        ),
+        dataset=dict(pipeline=train_pipeline),
     ),
-    val=dict(
-        type=dataset_type,
-        lq_folder="data/div2k_lq/jpeg/qf30/valid",
-        gt_folder="data/div2k/valid",
-        pipeline=test_pipeline,
-        scale=1,
-        test_mode=True,
-    ),
-    test=dict(
-        type=dataset_type,
-        lq_folder="data/div2k_lq/jpeg/qf30/valid",
-        gt_folder="data/div2k/valid",
-        pipeline=test_pipeline,
-        scale=1,
-        test_mode=True,
-    ),
+    val=dict(pipeline=test_pipeline),
+    test=dict(pipeline=test_pipeline),
 )

@@ -1,3 +1,5 @@
+_base_ = "vimeo90k_triplet.py"
+
 norm_cfg = dict(mean=[0, 0, 0], std=[1, 1, 1])
 train_pipeline = [
     dict(
@@ -28,61 +30,13 @@ test_pipeline = [
     dict(type="Collect", keys=["lq", "gt"], meta_keys=["lq_path", "gt_path", "key"]),
 ]
 
-batchsize = 8
-ngpus = 2
-assert batchsize % ngpus == 0, (
-    "Samples in a batch should better be evenly" " distributed among all GPUs."
-)
-batchsize_gpu = batchsize // ngpus
-
-dataset_type = "PairedVideoDataset"
-
-dataset_gt_root = "data/vimeo_triplet"
-dataset_lq_folder = "data/vimeo_triplet_lq/hm18.0/ldp/qp37"
-
 # Since there are only three frames in a sequence,
 # two of which need padding in testing,
 # training also use padding.
 data = dict(
-    workers_per_gpu=batchsize_gpu,
-    train_dataloader=dict(samples_per_gpu=batchsize_gpu, drop_last=True),
-    val_dataloader=dict(samples_per_gpu=1),
-    test_dataloader=dict(samples_per_gpu=1),
     train=dict(
-        type="RepeatDataset",
-        times=1000,
-        dataset=dict(
-            type=dataset_type,
-            lq_folder=f"{dataset_lq_folder}",
-            gt_folder=f"{dataset_gt_root}/sequences",
-            pipeline=train_pipeline,
-            ann_file=f"{dataset_gt_root}/tri_trainlist.txt",
-            test_mode=False,
-            samp_len=-1,
-            padding=True,
-            center_gt=False,
-        ),
+        dataset=dict(pipeline=train_pipeline),
     ),
-    val=dict(
-        type=dataset_type,
-        lq_folder=f"{dataset_lq_folder}",
-        gt_folder=f"{dataset_gt_root}/sequences",
-        pipeline=test_pipeline,
-        ann_file=f"{dataset_gt_root}/tri_validlist.txt",
-        test_mode=True,
-        samp_len=-1,
-        padding=True,
-        center_gt=False,
-    ),
-    test=dict(
-        type=dataset_type,
-        lq_folder=f"{dataset_lq_folder}",
-        gt_folder=f"{dataset_gt_root}/sequences",
-        pipeline=test_pipeline,
-        ann_file=f"{dataset_gt_root}/tri_testlist.txt",
-        test_mode=True,
-        samp_len=-1,
-        padding=True,
-        center_gt=False,
-    ),
+    val=dict(pipeline=test_pipeline),
+    test=dict(pipeline=test_pipeline),
 )

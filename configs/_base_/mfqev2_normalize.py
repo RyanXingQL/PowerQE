@@ -1,3 +1,5 @@
+_base_ = "mfqev2.py"
+
 norm_cfg = dict(mean=[0, 0, 0], std=[1, 1, 1])
 train_pipeline = [
     dict(
@@ -28,58 +30,10 @@ test_pipeline = [
     dict(type="Collect", keys=["lq", "gt"], meta_keys=["lq_path", "gt_path", "key"]),
 ]
 
-batchsize = 8
-ngpus = 2
-assert batchsize % ngpus == 0, (
-    "Samples in a batch should better be evenly" " distributed among all GPUs."
-)
-batchsize_gpu = batchsize // ngpus
-
-dataset_type = "PairedVideoDataset"
-
-dataset_gt_root = "data/mfqev2"
-dataset_lq_root = "data/mfqev2_lq/hm18.0/ldp/qp37"
-
 data = dict(
-    workers_per_gpu=batchsize_gpu,
-    train_dataloader=dict(samples_per_gpu=batchsize_gpu, drop_last=True),
-    val_dataloader=dict(samples_per_gpu=1),
-    test_dataloader=dict(samples_per_gpu=1),
     train=dict(
-        type="RepeatDataset",
-        times=1000,
-        dataset=dict(
-            type=dataset_type,
-            lq_folder=f"{dataset_lq_root}/train",
-            gt_folder=f"{dataset_gt_root}/train",
-            pipeline=train_pipeline,
-            ann_file="",
-            test_mode=False,
-            samp_len=-1,
-            padding=False,
-            center_gt=False,
-        ),
+        dataset=dict(pipeline=train_pipeline),
     ),
-    val=dict(
-        type=dataset_type,
-        lq_folder=f"{dataset_lq_root}/test",
-        gt_folder=f"{dataset_gt_root}/test",
-        pipeline=test_pipeline,
-        ann_file="",
-        test_mode=True,
-        samp_len=-1,
-        padding=True,
-        center_gt=False,
-    ),
-    test=dict(
-        type=dataset_type,
-        lq_folder=f"{dataset_lq_root}/test",
-        gt_folder=f"{dataset_gt_root}/test",
-        pipeline=test_pipeline,
-        ann_file="",
-        test_mode=True,
-        samp_len=-1,
-        padding=True,
-        center_gt=False,
-    ),
+    val=dict(pipeline=test_pipeline),
+    test=dict(pipeline=test_pipeline),
 )
