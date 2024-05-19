@@ -1,6 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 import os
+import math
+from collections import defaultdict
 
 import mmcv
 import torch
@@ -33,6 +35,11 @@ def parse_args():
         "--gpu-collect",
         action="store_true",
         help="whether to use gpu to collect results",
+    )
+    parser.add_argument(
+        "--ignore-invalid",
+        action="store_true",
+        help="whether to ignore invalid results",
     )
     parser.add_argument(
         "--save-path",
@@ -155,10 +162,35 @@ def main():
 
     if rank == 0 and "eval_result" in outputs[0]:
         print("")
-        # print metrics
-        stats = dataset.evaluate(outputs)
-        for stat in stats:
-            print(f"Eval {stat}: {stats[stat]}")
+
+        if args.ignore_invalid:
+            # reformat outputs
+            outputs = [out["eval_result"] for out in outputs]
+            eval_result = defaultdict(list)
+            for out in outputs:
+                for metric, val in out.items():
+                    eval_result[metric].append(val)
+
+            for metric, val_list in eval_result.items():
+                # filter out invalid results
+                original_length = len(val_list)
+                filtered_values = [
+                    val for val in val_list if not (math.isinf(val) or math.isnan(val))
+                ]
+                num_invalid = original_length - len(filtered_values)
+                if num_invalid > 0:
+                    print(
+                        f"Warning: {num_invalid} invalid results (inf or NaN) for metric '{metric}' are ignored."
+                    )
+
+                # print metrics
+                print(f"Eval {metric}: {sum(filtered_values) / len(filtered_values)}")
+
+        else:
+            # print metrics
+            stats = dataset.evaluate(outputs)
+            for stat in stats:
+                print(f"Eval {stat}: {stats[stat]}")
 
         # save result pickle
         if args.out:
