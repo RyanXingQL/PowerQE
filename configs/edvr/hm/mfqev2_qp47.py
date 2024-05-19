@@ -1,4 +1,4 @@
-_base_ = ["../../_base_/runtime.py", "../../_base_/mfqev2_normalize.py"]
+_base_ = ["../../_base_/runtime.py", "../../_base_/hm/mfqev2_qp47_normalize.py"]
 
 exp_name = "edvr_mfqev2_qp47"
 

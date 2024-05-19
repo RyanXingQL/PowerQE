@@ -1,4 +1,7 @@
-_base_ = ["../../_base_/runtime.py", "../../_base_/vimeo90k_triplet_normalize.py"]
+_base_ = [
+    "../../_base_/runtime.py",
+    "../../_base_/hm/vimeo90k_triplet_qp27_normalize.py",
+]
 
 exp_name = "edvr_vimeo90k_triplet_qp27"
 

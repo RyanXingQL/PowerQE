@@ -1,4 +1,4 @@
-_base_ = "../basicvsr_plus_plus/hm/mfqev2_qp27.py"
+_base_ = "../../basicvsr_plus_plus/hm/mfqev2_qp27.py"
 
 exp_name = "provqe_mfqev2_qp27"
 
