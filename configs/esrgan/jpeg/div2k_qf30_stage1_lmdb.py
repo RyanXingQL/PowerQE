@@ -1,7 +1,6 @@
-_base_ = ["../../_base_/runtime.py", "../../_base_/div2k_qf30_lmdb_normalize.py"]
+_base_ = ["../../_base_/runtime.py", "../../_base_/jpeg/div2k_qf30_lmdb_normalize.py"]
 
 exp_name = "esrgan_div2k_qf30_stage1"
-work_dir = f"work_dirs/{exp_name}"
 
 model = dict(
     type="BasicQERestorer",
@@ -18,3 +17,5 @@ model = dict(
 
 norm_cfg = dict(mean=[0, 0, 0], std=[1, 1, 1])
 test_cfg = dict(denormalize=norm_cfg)
+
+work_dir = f"work_dirs/{exp_name}"
