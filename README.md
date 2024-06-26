@@ -33,8 +33,9 @@ Content:
 
 Resources:
 
-- [Pretrained models](https://www.dropbox.com/sh/3mzzprf7ulv6fcf/AAAy5sp3nODU07sTN-qSgnNRa?dl=0)
 - [Document](docs/v3.md)
+- [Pretrained models](https://www.dropbox.com/sh/3mzzprf7ulv6fcf/AAAy5sp3nODU07sTN-qSgnNRa?dl=0)
+- [Benchmark results](docs/benchmark_results/README.md)
 
 ## Install dependency
 
