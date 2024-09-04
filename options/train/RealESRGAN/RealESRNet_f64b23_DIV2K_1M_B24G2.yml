@@ -1,0 +1,103 @@
+# general settings
+name: train_RealESRNet_f64b23_DIV2K_1M_B24G2
+model_type: RealESRNetModel
+scale: 1
+num_gpu: 2  # 0: cpu mode; auto: can infer from your visible devices automatically
+manual_seed: 0
+
+# ----------------- options for synthesizing training data in RealESRNetModel ----------------- #
+gt_usm: False  # USM the ground-truth
+high_order_degradation: False # do not use the high-order degradation generation process
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: DIV2K
+    type: RealESRGANPairedDataset
+    dataroot_gt: datasets/DIV2K/train_size128_step64_thresh0.lmdb
+    dataroot_lq: datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0.lmdb
+    io_backend:
+      type: lmdb
+
+    gt_size: 128  # in accord with LMDB
+    use_hflip: true
+    use_rot: true
+
+    # data loader
+    num_worker_per_gpu: 12
+    batch_size_per_gpu: 24
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  val:
+    name: DIV2K
+    type: RealESRGANPairedDataset
+    dataroot_gt: datasets/DIV2K/valid
+    dataroot_lq: datasets/DIV2K/valid_BPG_QP37
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: RRDBNet
+  num_in_ch: 3
+  num_out_ch: 3
+  num_feat: 64
+  num_block: 23
+  num_grow_ch: 32
+  scale: 1  # default scale=4
+
+# path
+path:
+  pretrain_network_g: ~
+  param_key_g: params_ema
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  ema_decay: 0.999
+  optim_g:
+    type: Adam
+    lr: !!float 2e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+
+  scheduler:
+    type: MultiStepLR
+    milestones: [1000000]
+    gamma: 0.5
+
+  total_iter: 1000000
+  warmup_iter: -1  # no warm up
+
+  # losses
+  pixel_opt:
+    type: L1Loss
+    loss_weight: 1.0
+    reduction: mean
+
+# validation settings
+val:
+  val_freq: !!float 5e3
+  save_img: false
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+
+# logging settings
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 5e3
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500

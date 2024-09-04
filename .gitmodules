@@ -1,0 +1,3 @@
+[submodule "basicsr"]
+	path = basicsr
+	url = git@github.com:ryanxingql/BasicSR.git
