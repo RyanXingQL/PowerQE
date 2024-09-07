@@ -127,16 +127,16 @@ powerqe
 ```bash
 conda activate pqe
 
-#CUDA_VISIBLE_DEVICES=0 python powerqe/train.py -opt options/train/ESRGAN/RRDBNet_f64b23_DIV2K_1M_B24G2.yml --auto_resume
+#CUDA_VISIBLE_DEVICES=0 python powerqe/train.py -opt options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G2.yml --auto_resume
 CUDA_VISIBLE_DEVICES=<gpus> python powerqe/train.py -opt <cfg_path> [--auto_resume] [--debug] [--force_yml <key>=<value>]
 
 # or
-#CUDA_VISIBLE_DEVICES=4,5 python -m torch.distributed.launch --nproc_per_node=2 --master_port=4321 powerqe/train.py -opt options/train/ESRGAN/RRDBNet_f64b23_DIV2K_1M_B24G2.yml --launcher pytorch --auto_resume
+#CUDA_VISIBLE_DEVICES=4,5 python -m torch.distributed.launch --nproc_per_node=2 --master_port=4321 powerqe/train.py -opt options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G2.yml --launcher pytorch --auto_resume
 CUDA_VISIBLE_DEVICES=<gpus> python -m torch.distributed.launch --nproc_per_node=<num_gpus> --master_port=<master_port> powerqe/train.py -opt <cfg_path> --launcher pytorch [--auto_resume] [--debug] [--force_yml <key>=<value>]
 
 # or
 #chmod +x scripts/dist_train.sh
-#CUDA_VISIBLE_DEVICES=4,5 scripts/dist_train.sh 2 options/train/ESRGAN/RRDBNet_f64b23_DIV2K_1M_B24G2.yml --auto_resume
+#CUDA_VISIBLE_DEVICES=4,5 scripts/dist_train.sh 2 options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G2.yml --auto_resume
 CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/dist_train.sh <num_gpus> <cfg_path> [--auto_resume] [--debug] [--force_yml <key>=<value>]
 ```
 
@@ -149,16 +149,16 @@ CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/dist_train.sh <num_gpus
 ```bash
 conda activate pqe
 
-#CUDA_VISIBLE_DEVICES=0 python powerqe/test.py -opt options/test/ESRGAN/RRDBNet_f64b23_DIV2K_1M_B24G2.yml --force_yml path:pretrain_network_g=experiments/train_RRDBNet_f64b23_DIV2K_1M_B24G2/models/net_g_600000.pth
+#CUDA_VISIBLE_DEVICES=0 python powerqe/test.py -opt options/test/ESRGAN/RRDBNet_DIV2K_LMDB_G2_latest.yml --force_yml path:pretrain_network_g=experiments/train_RRDBNet_f64b23_DIV2K_1M_B24G2/models/net_g_600000.pth
 CUDA_VISIBLE_DEVICES=<gpus> python powerqe/test.py -opt <cfg_path> [--force_yml <key>=<value>]
 
 # or
-#CUDA_VISIBLE_DEVICES=4,5 python -m torch.distributed.launch --nproc_per_node=2 --master_port=4321 powerqe/test.py -opt options/test/ESRGAN/RRDBNet_f64b23_DIV2K_1M_B24G2.yml --launcher pytorch --force_yml path:pretrain_network_g=experiments/train_RRDBNet_f64b23_DIV2K_1M_B24G2/models/net_g_600000.pth
+#CUDA_VISIBLE_DEVICES=4,5 python -m torch.distributed.launch --nproc_per_node=2 --master_port=4321 powerqe/test.py -opt options/test/ESRGAN/RRDBNet_DIV2K_LMDB_G2_latest.yml --launcher pytorch --force_yml path:pretrain_network_g=experiments/train_RRDBNet_f64b23_DIV2K_1M_B24G2/models/net_g_600000.pth
 CUDA_VISIBLE_DEVICES=<gpus> python -m torch.distributed.launch --nproc_per_node=<num_gpus> --master_port=<master_port> powerqe/test.py -opt <cfg_path> --launcher pytorch [--force_yml <key>=<value>]
 
 # or
 #chmod +x scripts/dist_test.sh
-#CUDA_VISIBLE_DEVICES=4,5 scripts/dist_test.sh 2 options/test/ESRGAN/RRDBNet_f64b23_DIV2K_1M_B24G2.yml --force_yml path:pretrain_network_g=experiments/train_RRDBNet_f64b23_DIV2K_1M_B24G2/models/net_g_600000.pth
+#CUDA_VISIBLE_DEVICES=4,5 scripts/dist_test.sh 2 options/test/ESRGAN/RRDBNet_DIV2K_LMDB_G2_latest.yml --force_yml path:pretrain_network_g=experiments/train_RRDBNet_f64b23_DIV2K_1M_B24G2/models/net_g_600000.pth
 CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/dist_test.sh <num_gpus> <cfg_path> [--force_yml <key>=<value>]
 ```
 
@@ -188,8 +188,13 @@ Run for the DIV2K dataset:
 
 ```bash
 conda activate pqe
+
 python scripts/data_preparation/extract_subimages.py --dataset DIV2K
-python scripts/data_preparation/create_lmdb.py --dataset DIV2K
+
+#python scripts/data_preparation/create_lmdb.py --input_folder "tmp/datasets/DIV2K/train_size128_step64_thresh0" --lmdb_path "datasets/DIV2K/train_size128_step64_thresh0.lmdb"
+python scripts/data_preparation/create_lmdb.py --input_folder <gt_subimages_folder> --lmdb_path <gt_lmdb_path>
+#python scripts/data_preparation/create_lmdb.py --input_folder "tmp/datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0" --lmdb_path "datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0.lmdb"
+python scripts/data_preparation/create_lmdb.py --input_folder <lq_subimages_folder> --lmdb_path <lq_lmdb_path>
 ```
 
 Resulting file tree:

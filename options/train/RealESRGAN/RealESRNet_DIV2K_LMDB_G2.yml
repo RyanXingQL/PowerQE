@@ -1,27 +1,27 @@
 # general settings
-name: train_RRDBNet_f64b23_DIV2K_1M_B24G2
-model_type: SRModel
+name: train_RealESRGAN_RealESRNet_DIV2K_LMDB_G2
+model_type: RealESRNetModel
 scale: 1
 num_gpu: 2  # 0: cpu mode; auto: can infer from your visible devices automatically
 manual_seed: 0
+
+# ----------------- options for synthesizing training data in RealESRNetModel ----------------- #
+gt_usm: False  # USM the ground-truth
+high_order_degradation: False # do not use the high-order degradation generation process
 
 # dataset and data loader settings
 datasets:
   train:
     name: DIV2K
-    type: PairedImageDataset
-#    dataroot_gt: datasets/DIV2K/train
-#    dataroot_lq: datasets/DIV2K/train_BPG_QP37
-#    io_backend:
-#      type: disk
-    dataroot_gt: datasets/DIV2K/train_size128_step64_thresh0.lmdb
-    dataroot_lq: datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0.lmdb
+    type: RealESRGANPairedDataset
+    dataroot_gt: datasets/DIV2K/train_size256_step128_thresh0.lmdb
+    dataroot_lq: datasets/DIV2K/train_BPG_QP37_size256_step128_thresh0.lmdb
     io_backend:
       type: lmdb
 
-    gt_size: 128  # in accord with LMDB
-    use_hflip: true
-    use_rot: true
+    gt_size: 256  # in accord with LMDB
+    use_hflip: True
+    use_rot: False
 
     # data loader
     num_worker_per_gpu: 12
@@ -31,7 +31,7 @@ datasets:
 
   val:
     name: DIV2K
-    type: PairedImageDataset
+    type: RealESRGANPairedDataset
     dataroot_gt: datasets/DIV2K/valid
     dataroot_lq: datasets/DIV2K/valid_BPG_QP37
     io_backend:
@@ -50,7 +50,8 @@ network_g:
 # path
 path:
   pretrain_network_g: ~
-  strict_load_g: true
+  param_key_g: params_ema
+  strict_load_g: False
   resume_state: ~
 
 # training settings
@@ -63,10 +64,9 @@ train:
     betas: [0.9, 0.99]
 
   scheduler:
-    type: CosineAnnealingRestartLR
-    periods: [250000, 250000, 250000, 250000]
-    restart_weights: [1, 1, 1, 1]
-    eta_min: !!float 1e-7
+    type: MultiStepLR
+    milestones: [1000000]
+    gamma: 0.5
 
   total_iter: 1000000
   warmup_iter: -1  # no warm up
@@ -80,7 +80,7 @@ train:
 # validation settings
 val:
   val_freq: !!float 5e3
-  save_img: false
+  save_img: False
 
   metrics:
     psnr: # metric name, can be arbitrary
@@ -93,9 +93,6 @@ logger:
   print_freq: 100
   save_checkpoint_freq: !!float 5e3
   use_tb_logger: true
-  wandb:
-    project: ~
-    resume_id: ~
 
 # dist training settings
 dist_params:

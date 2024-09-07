@@ -25,4 +25,4 @@ jobs:
       - name: Sync to private repository
         run: |
           git remote add private git@github.com:ryanxingql/${{ secrets.PRIVATE_REPO_NAME }}.git
-          git push private basicsr-based-dev
+          git push private basicsr-based-dev --force

@@ -23,22 +23,16 @@ def prepare_keys_div2k(folder_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--dataset",
+        "--input_folder",
         type=str,
         required=True,
-        choices=["DIV2K"],
+    )
+    parser.add_argument(
+        "--lmdb_path",
+        type=str,
+        required=True,
     )
     args = parser.parse_args()
 
-    if args.dataset == "DIV2K":
-        # HQ images
-        folder_path = "tmp/datasets/DIV2K/train_size128_step64_thresh0"
-        lmdb_path = "datasets/DIV2K/train_size128_step64_thresh0.lmdb"
-        img_path_list, keys = prepare_keys_div2k(folder_path)
-        make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
-
-        # LQ images
-        folder_path = "tmp/datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0"
-        lmdb_path = "datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0.lmdb"
-        img_path_list, keys = prepare_keys_div2k(folder_path)
-        make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
+    img_path_list, keys = prepare_keys_div2k(args.input_folder)
+    make_lmdb_from_imgs(args.input_folder, args.lmdb_path, img_path_list, keys)

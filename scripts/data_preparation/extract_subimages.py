@@ -93,9 +93,9 @@ if __name__ == "__main__":
 
     if args.dataset == "DIV2K":
         args.input_folder = "datasets/DIV2K/train"
-        args.save_folder = "tmp/datasets/DIV2K/train_size128_step64_thresh0"
+        args.save_folder = f"tmp/datasets/DIV2K/train_size{args.crop_size}_step{args.step}_thresh{args.thresh_size}"
         extract_subimages()
 
         args.input_folder = "datasets/DIV2K/train_BPG_QP37"
-        args.save_folder = "tmp/datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0"
+        args.save_folder = f"tmp/datasets/DIV2K/train_BPG_QP37_size{args.crop_size}_step{args.step}_thresh{args.thresh_size}"
         extract_subimages()
