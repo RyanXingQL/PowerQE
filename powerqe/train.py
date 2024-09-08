@@ -151,7 +151,7 @@ def train_pipeline(root_path):
 
     # WARNING: should not use get_root_logger in the above codes, including the called functions
     # Otherwise the logger will not be properly initialized
-    log_file = osp.join(opt["path"]["log"], f"train_{opt['name']}_{get_time_str()}.log")
+    log_file = osp.join(opt["path"]["log"], f"{opt['name']}_{get_time_str()}.log")
     logger = get_root_logger(
         logger_name="basicsr", log_level=logging.INFO, log_file=log_file
     )
@@ -207,9 +207,10 @@ def train_pipeline(root_path):
         while train_data is not None:
             data_timer.record()
 
-            current_iter += 1
             if current_iter > total_iters:
                 break
+            current_iter += 1
+
             # update learning rate
             model.update_learning_rate(
                 current_iter, warmup_iter=opt["train"].get("warmup_iter", -1)

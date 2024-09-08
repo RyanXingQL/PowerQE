@@ -1,13 +1,15 @@
 # general settings
-name: train_RealESRGAN_RealESRNet_DIV2K_LMDB_G2
-model_type: RealESRNetModel
+name: train_RealESRGAN_DIV2K_LMDB_G2
+model_type: RealESRGANModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 2 GPUs
 manual_seed: 0
 
-# ----------------- options for synthesizing training data in RealESRNetModel ----------------- #
-gt_usm: False  # USM the ground-truth
-high_order_degradation: False # do not use the high-order degradation generation process
+# ----------------- options for synthesizing training data in RealESRGANModel ----------------- #
+# USM the ground-truth
+l1_gt_usm: False
+percep_gt_usm: False
+gan_gt_usm: False
 
 # dataset and data loader settings
 datasets:
@@ -47,11 +49,18 @@ network_g:
   num_grow_ch: 32
   scale: 1  # default scale=4
 
+network_d:
+  type: UNetDiscriminatorSN
+  num_in_ch: 3
+  num_feat: 64
+  skip_connection: True
+
 # path
 path:
-  pretrain_network_g: ~
+  # use the pre-trained Real-ESRNet model
+  pretrain_network_g: experiments/train_RealESRGAN_RealESRNet_DIV2K_LMDB_G2/models/net_g_latest.pth  # TODO: may switch to the best
   param_key_g: params_ema
-  strict_load_g: False
+  strict_load_g: true
   resume_state: ~
 
 # training settings
@@ -59,16 +68,21 @@ train:
   ema_decay: 0.999
   optim_g:
     type: Adam
-    lr: !!float 2e-4
+    lr: !!float 1e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+  optim_d:
+    type: Adam
+    lr: !!float 1e-4
     weight_decay: 0
     betas: [0.9, 0.99]
 
   scheduler:
     type: MultiStepLR
-    milestones: [1000000]
+    milestones: [400000]
     gamma: 0.5
 
-  total_iter: 1000000
+  total_iter: 400000
   warmup_iter: -1  # no warm up
 
   # losses
@@ -76,6 +90,32 @@ train:
     type: L1Loss
     loss_weight: 1.0
     reduction: mean
+  # perceptual loss (content and style losses)
+  perceptual_opt:
+    type: PerceptualLoss
+    layer_weights:
+      # before relu
+      'conv1_2': 0.1
+      'conv2_2': 0.1
+      'conv3_4': 1
+      'conv4_4': 1
+      'conv5_4': 1
+    vgg_type: vgg19
+    use_input_norm: true
+    perceptual_weight: !!float 1.0
+    style_weight: 0
+    range_norm: false
+    criterion: l1
+  # gan loss
+  gan_opt:
+    type: GANLoss
+    gan_type: vanilla
+    real_label_val: 1.0
+    fake_label_val: 0.0
+    loss_weight: !!float 1e-1
+
+  net_d_iters: 1
+  net_d_init_iters: 0
 
 # validation settings
 val:
@@ -87,6 +127,10 @@ val:
       type: calculate_psnr
       crop_border: 0
       test_y_channel: false
+    fid:
+      type: pyiqa
+    lpips:
+      type: pyiqa
 
 # logging settings
 logger:
