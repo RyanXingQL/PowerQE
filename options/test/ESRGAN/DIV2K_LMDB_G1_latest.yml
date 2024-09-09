@@ -47,5 +47,7 @@ val:
       test_y_channel: false
     fid:
       type: pyiqa
+      better: lower
     lpips:
       type: pyiqa
+      better: lower
