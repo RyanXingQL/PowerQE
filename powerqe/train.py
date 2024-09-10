@@ -8,7 +8,8 @@ from os import path as osp
 from basicsr.data import build_dataloader, build_dataset
 from basicsr.data.data_sampler import EnlargedSampler
 from basicsr.data.prefetch_dataloader import CPUPrefetcher, CUDAPrefetcher
-from basicsr.models import build_model
+
+# from basicsr.models import build_model
 from basicsr.utils import (
     AvgTimer,
     MessageLogger,
@@ -23,6 +24,8 @@ from basicsr.utils import (
     scandir,
 )
 from basicsr.utils.options import copy_opt_file, dict2str, parse_options
+
+from powerqe.models import build_model
 
 
 def init_tb_loggers(opt):

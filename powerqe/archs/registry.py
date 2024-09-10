@@ -1,0 +1,3 @@
+from basicsr.utils.registry import ARCH_REGISTRY as ARCH_REGISTRY_BASICSR
+
+ARCH_REGISTRY = ARCH_REGISTRY_BASICSR

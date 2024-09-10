@@ -125,19 +125,12 @@ powerqe
 ## Training
 
 ```bash
+#chmod +x scripts/train.sh
+
 conda activate pqe
 
-#CUDA_VISIBLE_DEVICES=0 python powerqe/train.py -opt options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G1.yml --auto_resume
-CUDA_VISIBLE_DEVICES=<gpus> python powerqe/train.py -opt <cfg_path> [--auto_resume] [--debug] [--force_yml <key>=<value>]
-
-# or
-#CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port=4321 powerqe/train.py -opt options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G1.yml --launcher pytorch --auto_resume
-CUDA_VISIBLE_DEVICES=<gpus> python -m torch.distributed.launch --nproc_per_node=<num_gpus> --master_port=<master_port> powerqe/train.py -opt <cfg_path> --launcher pytorch [--auto_resume] [--debug] [--force_yml <key>=<value>]
-
-# or
-#chmod +x scripts/dist_train.sh
-#CUDA_VISIBLE_DEVICES=0 scripts/dist_train.sh 1 options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G1.yml --auto_resume
-CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/dist_train.sh <num_gpus> <cfg_path> [--auto_resume] [--debug] [--force_yml <key>=<value>]
+#CUDA_VISIBLE_DEVICES=0 scripts/train.sh 1 options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G1.yml --auto_resume
+CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/train.sh <num_gpus> <cfg_path> [--auto_resume] [--debug] [--force_yml <key>=<value>]
 ```
 
 - `auto_resume`: Automatically resume from the latest existing checkpoint.
@@ -147,19 +140,12 @@ CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/dist_train.sh <num_gpus
 ## Testing
 
 ```bash
+#chmod +x scripts/test.sh
+
 conda activate pqe
 
-#CUDA_VISIBLE_DEVICES=0 python powerqe/test.py -opt options/test/ESRGAN/RRDBNet_DIV2K_LMDB_G1_latest.yml --force_yml path:pretrain_network_g=experiments/train_ESRGAN_RRDBNet_DIV2K_LMDB_G1/models/net_g_600000.pth
-CUDA_VISIBLE_DEVICES=<gpus> python powerqe/test.py -opt <cfg_path> [--force_yml <key>=<value>]
-
-# or
-#CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port=4321 powerqe/test.py -opt options/test/ESRGAN/RRDBNet_DIV2K_LMDB_G1_latest.yml --launcher pytorch --force_yml path:pretrain_network_g=experiments/train_ESRGAN_RRDBNet_DIV2K_LMDB_G1/models/net_g_600000.pth
-CUDA_VISIBLE_DEVICES=<gpus> python -m torch.distributed.launch --nproc_per_node=<num_gpus> --master_port=<master_port> powerqe/test.py -opt <cfg_path> --launcher pytorch [--force_yml <key>=<value>]
-
-# or
-#chmod +x scripts/dist_test.sh
-#CUDA_VISIBLE_DEVICES=0 scripts/dist_test.sh 1 options/test/ESRGAN/RRDBNet_DIV2K_LMDB_G1_latest.yml --force_yml path:pretrain_network_g=experiments/train_ESRGAN_RRDBNet_DIV2K_LMDB_G1/models/net_g_600000.pth
-CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/dist_test.sh <num_gpus> <cfg_path> [--force_yml <key>=<value>]
+#CUDA_VISIBLE_DEVICES=0 scripts/test.sh 1 options/test/ESRGAN/RRDBNet_DIV2K_LMDB_G1_latest.yml --force_yml path:pretrain_network_g=experiments/train_ESRGAN_RRDBNet_DIV2K_LMDB_G1/models/net_g_600000.pth
+CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/test.sh <num_gpus> <cfg_path> [--force_yml <key>=<value>]
 ```
 
 - Most models support only single-GPU testing, even when multi-GPU testing is requested.
