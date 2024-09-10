@@ -2,12 +2,10 @@ import logging
 import torch
 from os import path as osp
 
-from basicsr.data import build_dataloader, build_dataset
-
-# from basicsr.models import build_model
 from basicsr.utils import get_env_info, get_root_logger, get_time_str, make_exp_dirs
 from basicsr.utils.options import dict2str, parse_options
 
+from powerqe.data import build_dataloader, build_dataset
 from powerqe.models import build_model
 
 

@@ -1,0 +1,3 @@
+from basicsr.utils.registry import LOSS_REGISTRY as LOSS_REGISTRY_BASICSR
+
+LOSS_REGISTRY = LOSS_REGISTRY_BASICSR
