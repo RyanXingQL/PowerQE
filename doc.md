@@ -6,7 +6,9 @@ Chinese users may use mirrors:
 
 ```bash
 # for Conda: https://mirrors.tuna.tsinghua.edu.cn/help/anaconda
-pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/  # pip
+
+# for PyPI: https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
+pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
 ```
 
 First, create a Conda environment:

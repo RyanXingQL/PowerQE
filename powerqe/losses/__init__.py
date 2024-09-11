@@ -2,7 +2,6 @@ from copy import deepcopy
 
 
 from basicsr.utils import get_root_logger
-from basicsr.utils.registry import LOSS_REGISTRY as LOSS_REGISTRY_BASICSR
 
 from .registry import LOSS_REGISTRY
 
