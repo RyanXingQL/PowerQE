@@ -54,7 +54,7 @@ network_d:
 
 # path
 path:
-  pretrain_network_g: experiments/train_ESRGAN_RRDBNet_DIV2K_LMDB_G1/models/net_g_latest.pth  # TODO: may switch to the best
+  pretrain_network_g: experiments/train_ESRGAN_RRDBNet_DIV2K_LMDB_G1/models/net_g_latest.pth
   strict_load_g: true
   resume_state: ~
 

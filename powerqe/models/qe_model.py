@@ -1,7 +1,5 @@
 from basicsr.models.sr_model import SRModel
 
-from powerqe.archs import build_network
-
 from .registry import MODEL_REGISTRY
 
 
