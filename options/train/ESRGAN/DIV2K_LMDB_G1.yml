@@ -112,15 +112,9 @@ val:
 
   metrics:
     psnr:
-      type: calculate_psnr
-      crop_border: 0
-      test_y_channel: false
-    fid:
       type: pyiqa
-      better: lower
     lpips:
       type: pyiqa
-      better: lower
 
 # logging settings
 logger:

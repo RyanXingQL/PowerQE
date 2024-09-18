@@ -84,9 +84,7 @@ val:
 
   metrics:
     psnr:
-      type: calculate_psnr
-      crop_border: 0
-      test_y_channel: false
+      type: pyiqa
 
 # logging settings
 logger:

@@ -27,21 +27,21 @@ path:
 
 # validation settings
 val:
-  save_img: true  # save img -> tensor -> img version, which is lossy
+  save_img: false  # save img -> tensor -> img version, which is lossy
   suffix: ~  # add suffix to saved images, if None, use exp name
 
   metrics:
     psnr:
-      type: calculate_psnr
-      crop_border: 0
-      test_y_channel: false
-    ssim:
-      type: calculate_ssim
-      crop_border: 0
-      test_y_channel: false
-    fid:
       type: pyiqa
-      better: lower
+    ssim:
+      type: pyiqa
     lpips:
       type: pyiqa
-      better: lower
+    clipiqa+:
+      type: pyiqa
+    topiq_fr:
+      type: pyiqa
+    musiq:
+      type: pyiqa
+    wadiqam_fr:
+      type: pyiqa
