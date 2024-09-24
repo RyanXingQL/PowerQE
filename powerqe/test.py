@@ -10,7 +10,7 @@ from powerqe.models import build_model
 
 
 def test_pipeline(root_path):
-    # parse options, set distributed setting, set ramdom seed
+    # parse options, set distributed setting, set random seed
     opt, _ = parse_options(root_path, is_train=False)
 
     torch.backends.cudnn.benchmark = True
