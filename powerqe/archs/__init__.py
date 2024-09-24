@@ -4,8 +4,10 @@ from basicsr.utils import get_root_logger
 
 from .identitynet_arch import IdentityNet
 from .registry import ARCH_REGISTRY
+from .cbdnet_arch import CBDNet
+from .unet_arch import UNet
 
-__all__ = ["build_network", "ARCH_REGISTRY", "IdentityNet"]
+__all__ = ["build_network", "ARCH_REGISTRY", "IdentityNet", "CBDNet", "UNet"]
 
 
 def build_network(opt):
