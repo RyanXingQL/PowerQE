@@ -132,8 +132,13 @@ def train_pipeline(root_path):
     opt, args = parse_options(root_path, is_train=True)
     opt["root_path"] = root_path
 
-    torch.backends.cudnn.benchmark = True
-    # torch.backends.cudnn.deterministic = True
+    if opt["reproduce"]:
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = True
+        torch.use_deterministic_algorithms(True)
+    else:
+        torch.backends.cudnn.benchmark = True
+        # torch.backends.cudnn.deterministic = True
 
     # load resume states if necessary
     resume_state = load_resume_state(opt)
