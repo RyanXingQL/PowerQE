@@ -4,6 +4,7 @@ model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 2 GPUs
 manual_seed: 0
+reproduce: True
 
 # ----------------- options for synthesizing training data in RealESRNetModel ----------------- #
 gt_usm: False  # USM the ground-truth

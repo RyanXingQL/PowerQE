@@ -132,7 +132,7 @@ powerqe
 conda activate pqe
 
 #CUDA_VISIBLE_DEVICES=0 scripts/train.sh 1 options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G1.yml --auto_resume
-CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/train.sh <num_gpus> <cfg_path> [--auto_resume] [--debug] [--force_yml <key>=<value>]
+[CUBLAS_WORKSPACE_CONFIG=:4096:8] CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/train.sh <num_gpus> <cfg_path> [--auto_resume] [--debug] [--force_yml <key>=<value>]
 ```
 
 - `auto_resume`: Automatically resume from the latest existing checkpoint.
@@ -147,7 +147,7 @@ CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/train.sh <num_gpus> <cf
 conda activate pqe
 
 #CUDA_VISIBLE_DEVICES=0 scripts/test.sh 1 options/test/ESRGAN/RRDBNet_DIV2K_LMDB_G1_latest.yml --force_yml path:pretrain_network_g=experiments/train_ESRGAN_RRDBNet_DIV2K_LMDB_G1/models/net_g_600000.pth
-CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/test.sh <num_gpus> <cfg_path> [--force_yml <key>=<value>]
+[CUBLAS_WORKSPACE_CONFIG=:4096:8] CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/test.sh <num_gpus> <cfg_path> [--force_yml <key>=<value>]
 ```
 
 - Most models support only single-GPU testing, even when multi-GPU testing is requested.

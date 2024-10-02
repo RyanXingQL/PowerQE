@@ -4,6 +4,7 @@ model_type: RealESRGANModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 2 GPUs
 manual_seed: 0
+reproduce: True
 
 # ----------------- options for synthesizing training data in RealESRGANModel ----------------- #
 # USM the ground-truth
