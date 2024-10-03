@@ -43,9 +43,9 @@ network_g:
   type: MPRNet
   io_channels: 3
   n_feat: 16
-  scale_unetfeats: 16
-  scale_orsnetfeats: 16
-  num_cab: 4
+  scale_unetfeats: 8
+  scale_orsnetfeats: 8
+  num_cab: 1
 
 # path
 path:

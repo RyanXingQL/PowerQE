@@ -46,7 +46,7 @@ network_g:
   mid_channels: 32
   num_blocks: 4
   num_layers: 4
-  channel_growth: 32
+  channel_growth: 16
 
 # path
 path:
