@@ -16,7 +16,7 @@ def test_pipeline(root_path):
     if opt["reproduce"]:
         torch.backends.cudnn.benchmark = False
         torch.backends.cudnn.deterministic = True
-        torch.use_deterministic_algorithms(True)
+        torch.use_deterministic_algorithms(True, warn_only=True)
     else:
         torch.backends.cudnn.benchmark = True
         # torch.backends.cudnn.deterministic = True
