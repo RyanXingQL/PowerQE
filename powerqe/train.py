@@ -213,9 +213,9 @@ def train_pipeline(root_path):
         while train_data is not None:
             data_timer.record()
 
+            current_iter += 1
             if current_iter > total_iters:
                 break
-            current_iter += 1
 
             # update learning rate
             model.update_learning_rate(
@@ -250,6 +250,7 @@ def train_pipeline(root_path):
             # validation
             if opt.get("val") is not None and (
                 current_iter % opt["val"]["val_freq"] == 0
+                or current_iter == total_iters
             ):
                 if len(val_loaders) > 1:
                     logger.warning(
@@ -271,11 +272,6 @@ def train_pipeline(root_path):
     logger.info(f"End of training. Time consumed: {consumed_time}")
     logger.info("Save the latest model.")
     model.save(epoch=-1, current_iter=-1)  # -1 stands for the latest
-    if opt.get("val") is not None:
-        for val_loader in val_loaders:
-            model.validation(
-                val_loader, current_iter, tb_logger, opt["val"]["save_img"]
-            )
     if tb_logger:
         tb_logger.close()
 
