@@ -20,11 +20,10 @@ limitations under the License.
 """
 
 import argparse
+import cv2
 import multiprocessing as mp
 import os
 import os.path as osp
-
-import cv2
 from tqdm import tqdm
 
 
@@ -35,83 +34,78 @@ def run_cmd(cmd):
 def opencv_write_jpeg(src_path, quality, tar_path):
     img = cv2.imread(src_path)
     encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]  # 0-100
-    _, jpeg_data = cv2.imencode(".jpg", img, encode_param)
+    _, jpeg_data = cv2.imencode('.jpg', img, encode_param)
     comp_img = cv2.imdecode(jpeg_data, cv2.IMREAD_COLOR)
     cv2.imwrite(tar_path, comp_img)
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Compress image dataset.")
-    parser.add_argument("--codec", type=str, required=True, choices=["BPG", "JPEG"])
-    parser.add_argument(
-        "--dataset", type=str, required=True, choices=["DIV2K", "Flickr2K"]
-    )
-    parser.add_argument("--max-npro", type=int, default=16)
-    parser.add_argument("--quality", type=int, default=37)
+    parser = argparse.ArgumentParser(description='Compress image dataset.')
+    parser.add_argument('--codec', type=str, required=True, choices=['BPG', 'JPEG'])
+    parser.add_argument('--dataset', type=str, required=True, choices=['DIV2K', 'Flickr2K'])
+    parser.add_argument('--max-npro', type=int, default=16)
+    parser.add_argument('--quality', type=int, default=37)
     args = parser.parse_args()
     return args
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     args = parse_args()
 
-    if args.codec == "BPG":
-        enc_path = osp.abspath("datasets/libbpg/bpgenc")
-        dec_path = osp.abspath("datasets/libbpg/bpgdec")
+    if args.codec == 'BPG':
+        enc_path = osp.abspath('datasets/libbpg/bpgenc')
+        dec_path = osp.abspath('datasets/libbpg/bpgdec')
         paths = []
 
-        if args.dataset == "DIV2K":
-            src_root = osp.abspath("datasets/DIV2K")
-            tmp_root = osp.abspath("tmp/datasets/DIV2K")
-            tar_root = osp.abspath("datasets/DIV2K")
+        if args.dataset == 'DIV2K':
+            src_root = osp.abspath('datasets/DIV2K')
+            tmp_root = osp.abspath('tmp/datasets/DIV2K')
+            tar_root = osp.abspath('datasets/DIV2K')
 
             # training set
-            src_dir = osp.join(src_root, "train")
-            tmp_dir = osp.join(tmp_root, f"train_BPG_QP{args.quality}")
-            tar_dir = osp.join(tar_root, f"train_BPG_QP{args.quality}")
+            src_dir = osp.join(src_root, 'train')
+            tmp_dir = osp.join(tmp_root, f'train_BPG_QP{args.quality}')
+            tar_dir = osp.join(tar_root, f'train_BPG_QP{args.quality}')
             os.makedirs(tmp_dir)
             os.makedirs(tar_dir)
 
             for idx in range(1, 801):
                 paths.append(
                     dict(
-                        src=osp.join(src_dir, f"{idx:04d}.png"),
-                        bpg=osp.join(tmp_dir, f"{idx:04d}.bpg"),
-                        tar=osp.join(tar_dir, f"{idx:04d}.png"),
-                    )
-                )
+                        src=osp.join(src_dir, f'{idx:04d}.png'),
+                        bpg=osp.join(tmp_dir, f'{idx:04d}.bpg'),
+                        tar=osp.join(tar_dir, f'{idx:04d}.png'),
+                    ))
 
             # validation set
-            src_dir = osp.join(src_root, "valid")
-            tmp_dir = osp.join(tmp_root, f"valid_BPG_QP{args.quality}")
-            tar_dir = osp.join(tar_root, f"valid_BPG_QP{args.quality}")
+            src_dir = osp.join(src_root, 'valid')
+            tmp_dir = osp.join(tmp_root, f'valid_BPG_QP{args.quality}')
+            tar_dir = osp.join(tar_root, f'valid_BPG_QP{args.quality}')
             os.makedirs(tmp_dir)
             os.makedirs(tar_dir)
 
             for idx in range(801, 901):
                 paths.append(
                     dict(
-                        src=osp.join(src_dir, f"{idx:04d}.png"),
-                        bpg=osp.join(tmp_dir, f"{idx:04d}.bpg"),
-                        tar=osp.join(tar_dir, f"{idx:04d}.png"),
-                    )
-                )
+                        src=osp.join(src_dir, f'{idx:04d}.png'),
+                        bpg=osp.join(tmp_dir, f'{idx:04d}.bpg'),
+                        tar=osp.join(tar_dir, f'{idx:04d}.png'),
+                    ))
 
-        if args.dataset == "Flickr2K":
-            src_dir = osp.abspath("datasets/Flickr2K")
-            tmp_dir = osp.abspath(f"tmp/datasets/Flickr2K/BPG_QP{args.quality}")
-            tar_dir = osp.abspath(f"datasets/Flickr2K/BPG_QP{args.quality}")
+        if args.dataset == 'Flickr2K':
+            src_dir = osp.abspath('datasets/Flickr2K')
+            tmp_dir = osp.abspath(f'tmp/datasets/Flickr2K/BPG_QP{args.quality}')
+            tar_dir = osp.abspath(f'datasets/Flickr2K/BPG_QP{args.quality}')
             os.makedirs(tmp_dir)
             os.makedirs(tar_dir)
 
             for idx in range(1, 2651):
                 paths.append(
                     dict(
-                        src=osp.join(src_dir, f"{idx:06d}.png"),
-                        bpg=osp.join(tmp_dir, f"{idx:06d}.bpg"),
-                        tar=osp.join(tar_dir, f"{idx:06d}.png"),
-                    )
-                )
+                        src=osp.join(src_dir, f'{idx:06d}.png'),
+                        bpg=osp.join(tmp_dir, f'{idx:06d}.bpg'),
+                        tar=osp.join(tar_dir, f'{idx:06d}.png'),
+                    ))
 
             # create meta
             # with open(osp.join(src_dir, "train.txt"), "w") as file:
@@ -138,10 +132,10 @@ if __name__ == "__main__":
         for path in paths:
             enc_cmd = f'{enc_path} -o {path["bpg"]} -q {args.quality}' f' {path["src"]}'
             dec_cmd = f'{dec_path} -o {path["tar"]} {path["bpg"]}'
-            cmd = f"{enc_cmd} && {dec_cmd}"
+            cmd = f'{enc_cmd} && {dec_cmd}'
             pool.apply_async(
                 func=run_cmd,
-                args=(cmd,),
+                args=(cmd, ),
                 callback=lambda _: pbar.update(),
                 error_callback=lambda err: print(err),
             )
@@ -149,51 +143,45 @@ if __name__ == "__main__":
         pool.join()
         pbar.close()
 
-    elif args.codec == "JPEG":
+    elif args.codec == 'JPEG':
         paths = []
 
-        if args.dataset == "DIV2K":
-            src_root = osp.abspath("datasets/DIV2K")
-            tar_root = osp.abspath("datasets/DIV2K")
+        if args.dataset == 'DIV2K':
+            src_root = osp.abspath('datasets/DIV2K')
+            tar_root = osp.abspath('datasets/DIV2K')
 
             # training set
-            src_dir = osp.join(src_root, "train")
-            tar_dir = osp.join(tar_root, f"train_JPEG_QF{args.quality}")
+            src_dir = osp.join(src_root, 'train')
+            tar_dir = osp.join(tar_root, f'train_JPEG_QF{args.quality}')
             os.makedirs(tar_dir)
 
             for idx in range(1, 801):
-                paths.append(
-                    dict(
-                        src=osp.join(src_dir, f"{idx:04d}.png"),
-                        tar=osp.join(tar_dir, f"{idx:04d}.png"),
-                    )
-                )
+                paths.append(dict(
+                    src=osp.join(src_dir, f'{idx:04d}.png'),
+                    tar=osp.join(tar_dir, f'{idx:04d}.png'),
+                ))
 
             # validation set
-            src_dir = osp.join(src_root, "valid")
-            tar_dir = osp.join(tar_root, f"valid_JPEG_QF{args.quality}")
+            src_dir = osp.join(src_root, 'valid')
+            tar_dir = osp.join(tar_root, f'valid_JPEG_QF{args.quality}')
             os.makedirs(tar_dir)
 
             for idx in range(801, 901):
-                paths.append(
-                    dict(
-                        src=osp.join(src_dir, f"{idx:04d}.png"),
-                        tar=osp.join(tar_dir, f"{idx:04d}.png"),
-                    )
-                )
+                paths.append(dict(
+                    src=osp.join(src_dir, f'{idx:04d}.png'),
+                    tar=osp.join(tar_dir, f'{idx:04d}.png'),
+                ))
 
-        if args.dataset == "Flickr2K":
-            src_dir = osp.abspath("datasets/Flickr2K")
-            tar_dir = osp.abspath(f"datasets/Flickr2K_JPEG_QF{args.quality}")
+        if args.dataset == 'Flickr2K':
+            src_dir = osp.abspath('datasets/Flickr2K')
+            tar_dir = osp.abspath(f'datasets/Flickr2K_JPEG_QF{args.quality}')
             os.makedirs(tar_dir)
 
             for idx in range(1, 2651):
-                paths.append(
-                    dict(
-                        src=osp.join(src_dir, f"{idx:06d}.png"),
-                        tar=osp.join(tar_dir, f"{idx:06d}.png"),
-                    )
-                )
+                paths.append(dict(
+                    src=osp.join(src_dir, f'{idx:06d}.png'),
+                    tar=osp.join(tar_dir, f'{idx:06d}.png'),
+                ))
 
             # create meta
             # with open(osp.join(src_dir, "train.txt"), "w") as file:
@@ -221,9 +209,9 @@ if __name__ == "__main__":
             pool.apply_async(
                 func=opencv_write_jpeg,
                 args=(
-                    path["src"],
+                    path['src'],
                     args.quality,
-                    path["tar"],
+                    path['tar'],
                 ),
                 callback=lambda _: pbar.update(),
                 error_callback=lambda err: print(err),

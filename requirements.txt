@@ -1,3 +1,3 @@
-six
 
 -r basicsr/requirements.txt
+six

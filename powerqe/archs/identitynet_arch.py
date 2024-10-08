@@ -8,7 +8,7 @@ from .registry import ARCH_REGISTRY
 class IdentityNet(nn.Module):
     """Identity network used for testing benchmarks (in tensors). Support up-scaling."""
 
-    def __init__(self, scale=1, upscale_mode="nearest"):
+    def __init__(self, scale=1, upscale_mode='nearest'):
         super().__init__()
         self.scale = scale
         self.upscale_mode = upscale_mode

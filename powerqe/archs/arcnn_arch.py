@@ -37,9 +37,7 @@ class ARCNN(nn.Module):
         super().__init__()
 
         self.layers = nn.Sequential(
-            nn.Conv2d(
-                io_channels, mid_channels_1, in_kernel_size, padding=in_kernel_size // 2
-            ),
+            nn.Conv2d(io_channels, mid_channels_1, in_kernel_size, padding=in_kernel_size // 2),
             nn.ReLU(inplace=False),
             nn.Conv2d(
                 mid_channels_1,

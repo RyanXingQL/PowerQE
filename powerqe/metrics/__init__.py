@@ -2,7 +2,7 @@ from copy import deepcopy
 
 from .registry import METRIC_REGISTRY
 
-__all__ = ["calculate_metric", "METRIC_REGISTRY"]
+__all__ = ['calculate_metric', 'METRIC_REGISTRY']
 
 
 def calculate_metric(data, opt):
@@ -13,6 +13,6 @@ def calculate_metric(data, opt):
             type (str): Model type.
     """
     opt = deepcopy(opt)
-    metric_type = opt.pop("type")
+    metric_type = opt.pop('type')
     metric = METRIC_REGISTRY.get(metric_type)(**data, **opt)
     return metric

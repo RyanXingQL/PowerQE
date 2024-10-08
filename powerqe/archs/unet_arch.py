@@ -6,19 +6,18 @@ from .registry import ARCH_REGISTRY
 
 
 class Up(nn.Module):
+
     def __init__(self, method, nf_in=None):
         super().__init__()
 
-        supported_methods = ["upsample", "transpose2d"]
+        supported_methods = ['upsample', 'transpose2d']
         if method not in supported_methods:
-            raise NotImplementedError(
-                f'Upsampling method should be in "{supported_methods}";'
-                f' received "{method}".'
-            )
+            raise NotImplementedError(f'Upsampling method should be in "{supported_methods}";'
+                                      f' received "{method}".')
 
-        if method == "upsample":
-            self.up = nn.Upsample(scale_factor=2, mode="bicubic", align_corners=False)
-        elif method == "transpose2d":
+        if method == 'upsample':
+            self.up = nn.Upsample(scale_factor=2, mode='bicubic', align_corners=False)
+        elif method == 'transpose2d':
             self.up = nn.ConvTranspose2d(
                 in_channels=nf_in,
                 out_channels=nf_in // 2,
@@ -34,10 +33,10 @@ class Up(nn.Module):
         diff_w = ref_big.size()[3] - feat.size()[3]  # W
 
         if diff_h < 0:
-            feat = feat[:, :, : ref_big.size()[2], :]
+            feat = feat[:, :, :ref_big.size()[2], :]
             diff_h = 0
         if diff_w < 0:
-            feat = feat[:, :, :, : ref_big.size()[3]]
+            feat = feat[:, :, :, :ref_big.size()[3]]
             diff_w = 0
 
         # only pad H and W; left (diff_w//2)
@@ -51,7 +50,7 @@ class Up(nn.Module):
                 diff_h // 2,
                 (diff_h - diff_h // 2),
             ],
-            mode="constant",
+            mode='constant',
             value=0,
         )
 
@@ -60,6 +59,7 @@ class Up(nn.Module):
 
 @ARCH_REGISTRY.register()
 class UNet(nn.Module):
+
     def __init__(
         self,
         nf_in,
@@ -71,48 +71,38 @@ class UNet(nn.Module):
         nl_base=1,
         nl_max=8,
         nl_gr=2,
-        down="avepool2d",
-        up="transpose2d",
-        reduce="concat",
+        down='avepool2d',
+        up='transpose2d',
+        reduce='concat',
         residual=True,
     ):
         super().__init__()
 
-        supported_up_methods = ["upsample", "transpose2d"]
+        supported_up_methods = ['upsample', 'transpose2d']
         if up not in supported_up_methods:
-            raise NotImplementedError(
-                f'Upsampling method should be in "{supported_up_methods}";'
-                f' received "{up}".'
-            )
+            raise NotImplementedError(f'Upsampling method should be in "{supported_up_methods}";'
+                                      f' received "{up}".')
 
-        supported_down_methods = ["avepool2d", "strideconv"]
+        supported_down_methods = ['avepool2d', 'strideconv']
         if down not in supported_down_methods:
-            raise NotImplementedError(
-                f'Downsampling method should be in "{supported_down_methods}";'
-                f' received "{down}".'
-            )
+            raise NotImplementedError(f'Downsampling method should be in "{supported_down_methods}";'
+                                      f' received "{down}".')
 
-        supported_reduce_methods = ["add", "concat"]
+        supported_reduce_methods = ['add', 'concat']
         if reduce not in supported_reduce_methods:
-            raise NotImplementedError(
-                f'Reduce method should be in "{supported_reduce_methods}";'
-                f' received "{reduce}".'
-            )
+            raise NotImplementedError(f'Reduce method should be in "{supported_reduce_methods}";'
+                                      f' received "{reduce}".')
 
         if residual and (nf_in != nf_out):
-            raise ValueError(
-                "The input channel number should be equal to the"
-                " output channel number."
-            )
+            raise ValueError('The input channel number should be equal to the'
+                             ' output channel number.')
 
         self.nlevel = nlevel
         self.reduce = reduce
         self.residual = residual
 
         self.inc = nn.Sequential(
-            nn.Conv2d(
-                in_channels=nf_in, out_channels=nf_base, kernel_size=3, padding=1
-            ),
+            nn.Conv2d(in_channels=nf_in, out_channels=nf_base, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
         )
 
@@ -126,12 +116,12 @@ class UNet(nn.Module):
 
             # define downsampling operator
 
-            if down == "avepool2d":
-                setattr(self, f"down_{idx_level}", nn.AvgPool2d(kernel_size=2))
-            elif down == "strideconv":
+            if down == 'avepool2d':
+                setattr(self, f'down_{idx_level}', nn.AvgPool2d(kernel_size=2))
+            elif down == 'strideconv':
                 setattr(
                     self,
-                    f"down_{idx_level}",
+                    f'down_{idx_level}',
                     nn.Sequential(
                         nn.Conv2d(
                             in_channels=nf_lst[-2],
@@ -165,15 +155,15 @@ class UNet(nn.Module):
                     ),
                     nn.ReLU(inplace=True),
                 ]
-            setattr(self, f"enc_{idx_level}", nn.Sequential(*module_lst))
+            setattr(self, f'enc_{idx_level}', nn.Sequential(*module_lst))
 
         for idx_level in range((nlevel - 2), -1, -1):
             # define upsampling operator
-            setattr(self, f"up_{idx_level}", Up(nf_in=nf_lst[idx_level + 1], method=up))
+            setattr(self, f'up_{idx_level}', Up(nf_in=nf_lst[idx_level + 1], method=up))
 
             # define decoding operator
 
-            if reduce == "add":
+            if reduce == 'add':
                 module_lst = [
                     nn.Conv2d(
                         in_channels=nf_lst[idx_level],
@@ -203,11 +193,9 @@ class UNet(nn.Module):
                     ),
                     nn.ReLU(inplace=True),
                 ]
-            setattr(self, f"dec_{idx_level}", nn.Sequential(*module_lst))
+            setattr(self, f'dec_{idx_level}', nn.Sequential(*module_lst))
 
-        self.outc = nn.Conv2d(
-            in_channels=nf_base, out_channels=nf_out, kernel_size=3, padding=1
-        )
+        self.outc = nn.Conv2d(in_channels=nf_base, out_channels=nf_out, kernel_size=3, padding=1)
 
     def forward(self, inp_t):
         feat = self.inc(inp_t)
@@ -217,21 +205,21 @@ class UNet(nn.Module):
         map_lst = []  # guidance maps
         for idx_level in range(1, self.nlevel):
             map_lst.append(feat)  # from level 0, 1, ..., (nlevel-1)
-            down = getattr(self, f"down_{idx_level}")
-            enc = getattr(self, f"enc_{idx_level}")
+            down = getattr(self, f'down_{idx_level}')
+            enc = getattr(self, f'enc_{idx_level}')
             feat = enc(down(feat))
 
         # up
 
         for idx_level in range((self.nlevel - 2), -1, -1):
-            up = getattr(self, f"up_{idx_level}")
-            dec = getattr(self, f"dec_{idx_level}")
+            up = getattr(self, f'up_{idx_level}')
+            dec = getattr(self, f'dec_{idx_level}')
             g_map = map_lst[idx_level]
             up_feat = up(inp_t=feat, ref_big=g_map)
 
-            if self.reduce == "add":
+            if self.reduce == 'add':
                 feat = up_feat + g_map
-            elif self.reduce == "concat":
+            elif self.reduce == 'concat':
                 feat = torch.cat((up_feat, g_map), dim=1)
             feat = dec(feat)
 

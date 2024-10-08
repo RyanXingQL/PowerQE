@@ -1,5 +1,4 @@
 from basicsr.models.sr_model import SRModel
-
 from .registry import MODEL_REGISTRY
 
 

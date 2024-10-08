@@ -32,9 +32,7 @@ class DnCNN(nn.Module):
                 layers += [
                     # bias is unnecessary and off due to the following BN
                     nn.Conv2d(mid_channels, mid_channels, 3, padding=1, bias=False),
-                    nn.BatchNorm2d(
-                        num_features=mid_channels, momentum=0.9, eps=1e-04, affine=True
-                    ),
+                    nn.BatchNorm2d(num_features=mid_channels, momentum=0.9, eps=1e-04, affine=True),
                 ]
             else:
                 layers.append(nn.Conv2d(mid_channels, mid_channels, 3, padding=1))

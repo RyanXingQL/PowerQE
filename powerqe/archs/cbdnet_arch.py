@@ -1,8 +1,8 @@
 import torch
 from torch import nn as nn
 
-from .unet_arch import UNet
 from .registry import ARCH_REGISTRY
+from .unet_arch import UNet
 
 
 @ARCH_REGISTRY.register()
@@ -31,41 +31,35 @@ class CBDNet(nn.Module):
         nf_gr_denoise=2,
         nl_base_denoise=1,
         nl_gr_denoise=2,
-        down_denoise="avepool2d",
-        up_denoise="transpose2d",
-        reduce_denoise="add",
+        down_denoise='avepool2d',
+        up_denoise='transpose2d',
+        reduce_denoise='add',
     ):
         super().__init__()
 
-        estimate_list = nn.ModuleList(
-            [
+        estimate_list = nn.ModuleList([
+            nn.Conv2d(
+                in_channels=io_channels,
+                out_channels=estimate_channels,
+                kernel_size=3,
+                padding=3 // 2,
+            ),
+            nn.ReLU(inplace=True),
+        ])
+        for _ in range(3):
+            estimate_list += nn.ModuleList([
                 nn.Conv2d(
-                    in_channels=io_channels,
+                    in_channels=estimate_channels,
                     out_channels=estimate_channels,
                     kernel_size=3,
                     padding=3 // 2,
                 ),
                 nn.ReLU(inplace=True),
-            ]
-        )
-        for _ in range(3):
-            estimate_list += nn.ModuleList(
-                [
-                    nn.Conv2d(
-                        in_channels=estimate_channels,
-                        out_channels=estimate_channels,
-                        kernel_size=3,
-                        padding=3 // 2,
-                    ),
-                    nn.ReLU(inplace=True),
-                ]
-            )
-        estimate_list += nn.ModuleList(
-            [
-                nn.Conv2d(estimate_channels, io_channels, 3, padding=3 // 2),
-                nn.ReLU(inplace=True),
-            ]
-        )
+            ])
+        estimate_list += nn.ModuleList([
+            nn.Conv2d(estimate_channels, io_channels, 3, padding=3 // 2),
+            nn.ReLU(inplace=True),
+        ])
         self.estimate = nn.Sequential(*estimate_list)
 
         self.denoise = UNet(
