@@ -151,7 +151,7 @@ CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/test.sh <num_gpus> <cfg
 ```
 
 - Most models support only single-GPU testing, even when multi-GPU testing is requested.
-- `force_yml`: Arguments that replaces those in the yml. Examples: `val:save_img=false` and `path:pretrain_network_g=experiments/train_ESRGAN_RRDBNet_DIV2K_LMDB_G1/models/net_g_600000.pth`.
+- `force_yml`: Arguments that replaces those in the yml. Examples: `val:save_img=true` and `path:pretrain_network_g=experiments/train_ESRGAN_RRDBNet_DIV2K_LMDB_G1/models/net_g_600000.pth`.
 
 ## Others
 
