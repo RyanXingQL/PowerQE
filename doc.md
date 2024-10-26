@@ -131,7 +131,7 @@ powerqe
 
 conda activate pqe
 
-#CUDA_VISIBLE_DEVICES=0 scripts/train.sh 1 options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G1.yml --auto_resume
+#CUDA_VISIBLE_DEVICES=0 scripts/train.sh 1 options/train/ESRGAN/RRDBNet_DIV2K_LMDB_G1.yml
 CUDA_VISIBLE_DEVICES=<gpus> [PORT=<master_port>] scripts/train.sh <num_gpus> <cfg_path> [--auto_resume] [--debug] [--force_yml <key>=<value>]
 ```
 
@@ -179,10 +179,8 @@ conda activate pqe
 
 python scripts/data_preparation/extract_subimages.py --dataset DIV2K
 
-#python scripts/data_preparation/create_lmdb.py --input_folder "tmp/datasets/DIV2K/train_size128_step64_thresh0" --lmdb_path "datasets/DIV2K/train_size128_step64_thresh0.lmdb"
-python scripts/data_preparation/create_lmdb.py --input_folder <gt_subimages_folder> --lmdb_path <gt_lmdb_path>
-#python scripts/data_preparation/create_lmdb.py --input_folder "tmp/datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0" --lmdb_path "datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0.lmdb"
-python scripts/data_preparation/create_lmdb.py --input_folder <lq_subimages_folder> --lmdb_path <lq_lmdb_path>
+python scripts/data_preparation/create_lmdb.py --input_folder "tmp/datasets/DIV2K/train_size128_step64_thresh0" --lmdb_path "datasets/DIV2K/train_size128_step64_thresh0.lmdb"
+python scripts/data_preparation/create_lmdb.py --input_folder "tmp/datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0" --lmdb_path "datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0.lmdb"
 ```
 
 Resulting file tree:
