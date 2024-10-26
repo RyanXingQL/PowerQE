@@ -1,0 +1,99 @@
+# general settings
+name: train_ESRGAN_RRDBNet_DF2K_LMDB_G2
+model_type: SRModel
+scale: 1
+num_gpu: 2  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+reproduce: True
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: DF2K
+    type: PairedImageDataset
+#    dataroot_gt: datasets/DIV2K/train
+#    dataroot_lq: datasets/DIV2K/train_BPG_QP37
+#    io_backend:
+#      type: disk
+    dataroot_gt: datasets/DF2K/train_size256_step128_thresh0.lmdb
+    dataroot_lq: datasets/DF2K/train_BPG_QP37_size256_step128_thresh0.lmdb
+    io_backend:
+      type: lmdb
+
+    gt_size: 256  # in accord with LMDB
+    use_hflip: true
+    use_rot: true
+
+    # data loader
+    num_worker_per_gpu: 24
+    batch_size_per_gpu: 24
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  val:
+    name: DIV2K
+    type: PairedImageDataset
+    dataroot_gt: datasets/DIV2K/valid
+    dataroot_lq: datasets/DIV2K/valid_BPG_QP37
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: RRDBNet
+  num_in_ch: 3
+  num_out_ch: 3
+  num_feat: 64
+  num_block: 23
+  num_grow_ch: 32
+  scale: 1  # default scale=4
+
+# path
+path:
+  pretrain_network_g: ~
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  ema_decay: 0.999
+  optim_g:
+    type: Adam
+    lr: !!float 2e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+
+  scheduler:
+    type: CosineAnnealingRestartLR
+    periods: [250000, 250000, 250000, 250000]
+    restart_weights: [1, 1, 1, 1]
+    eta_min: !!float 1e-7
+
+  total_iter: 1000000
+  warmup_iter: -1  # no warm up
+
+  # losses
+  pixel_opt:
+    type: L1Loss
+    loss_weight: 1.0
+    reduction: mean
+
+# validation settings
+val:
+  val_freq: !!float 5e4
+  save_img: false
+
+  metrics:
+    psnr:
+      type: pyiqa
+
+# logging settings
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 1e4
+  use_tb_logger: true
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500

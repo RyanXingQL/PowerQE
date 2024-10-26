@@ -36,11 +36,11 @@ def worker(path):
     for x in h_space:
         for y in w_space:
             index += 1
-            assert index < 1000
+            assert index < 10000
             cropped_img = img[x:x + args.crop_size, y:y + args.crop_size, ...]
             cropped_img = np.ascontiguousarray(cropped_img)
             cv2.imwrite(
-                osp.join(args.save_folder, f'{img_name}_s{index:03d}{extension}'),
+                osp.join(args.save_folder, f'{img_name}_s{index:04d}{extension}'),
                 cropped_img,
                 [cv2.IMWRITE_PNG_COMPRESSION, args.compression_level],
             )
@@ -48,18 +48,24 @@ def worker(path):
     return process_info
 
 
-def extract_subimages():
+def extract_subimages(allow_exist=False):
     """Crop images to subimages."""
     if not osp.exists(args.save_folder):
         os.makedirs(args.save_folder)
         print(f'mkdir {args.save_folder} ...')
     else:
-        print(f'Folder {args.save_folder} already exists. Exit.')
-        sys.exit(1)
+        print(f'Folder {args.save_folder} already exists.')
+        if not allow_exist:
+            sys.exit(1)
 
     img_list = list(scandir(args.input_folder, full_path=True))
+    if allow_exist:
+        # make sure that images between input_folder and save_folder have different names
+        for path in img_list:
+            to_save_img_path = osp.join(args.save_folder, osp.basename(path))
+            assert not osp.exists(to_save_img_path), f'{to_save_img_path} already exists.'
 
-    pbar = tqdm(total=len(img_list), unit='image', desc='Extract')
+    pbar = tqdm(total=len(img_list), unit='image', desc='Extract', ncols=0)
     pool = Pool(args.n_thread)
     for path in img_list:
         pool.apply_async(worker, args=(path, ), callback=lambda arg: pbar.update(1))
@@ -71,7 +77,7 @@ def extract_subimages():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', type=str, required=True, choices=['DIV2K'])
+    parser.add_argument('--dataset', type=str, required=True, choices=['DIV2K', 'DF2K'])
     parser.add_argument('--n_thread', type=int, default=20, help='Thread number')
     parser.add_argument(
         '--compression_level',
@@ -101,3 +107,22 @@ if __name__ == '__main__':
         args.save_folder = ('tmp/datasets/DIV2K/train_BPG_QP37_'
                             f'size{args.crop_size}_step{args.step}_thresh{args.thresh_size}')
         extract_subimages()
+
+    elif args.dataset == 'DF2K':
+        args.input_folder = 'datasets/DIV2K/train'
+        args.save_folder = f'tmp/datasets/DF2K/train_size{args.crop_size}_step{args.step}_thresh{args.thresh_size}'
+        extract_subimages()
+
+        args.input_folder = 'datasets/Flickr2K'
+        args.save_folder = f'tmp/datasets/DF2K/train_size{args.crop_size}_step{args.step}_thresh{args.thresh_size}'
+        extract_subimages(allow_exist=True)
+
+        args.input_folder = 'datasets/DIV2K/train_BPG_QP37'
+        args.save_folder = ('tmp/datasets/DF2K/train_BPG_QP37_'
+                            f'size{args.crop_size}_step{args.step}_thresh{args.thresh_size}')
+        extract_subimages()
+
+        args.input_folder = 'datasets/Flickr2K_BPG_QP37'
+        args.save_folder = ('tmp/datasets/DF2K/train_BPG_QP37_'
+                            f'size{args.crop_size}_step{args.step}_thresh{args.thresh_size}')
+        extract_subimages(allow_exist=True)

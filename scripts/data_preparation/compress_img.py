@@ -94,8 +94,8 @@ if __name__ == '__main__':
 
         if args.dataset == 'Flickr2K':
             src_dir = osp.abspath('datasets/Flickr2K')
-            tmp_dir = osp.abspath(f'tmp/datasets/Flickr2K/BPG_QP{args.quality}')
-            tar_dir = osp.abspath(f'datasets/Flickr2K/BPG_QP{args.quality}')
+            tmp_dir = osp.abspath(f'tmp/datasets/Flickr2K_BPG_QP{args.quality}')
+            tar_dir = osp.abspath(f'datasets/Flickr2K_BPG_QP{args.quality}')
             os.makedirs(tmp_dir)
             os.makedirs(tar_dir)
 
