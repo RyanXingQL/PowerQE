@@ -77,8 +77,9 @@ def extract_subimages(allow_exist=False):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', type=str, required=True, choices=['DIV2K', 'DF2K'])
-    parser.add_argument('--n_thread', type=int, default=20, help='Thread number')
+    parser.add_argument('--input-folder', type=str, required=True, default='datasets/DIV2K/train')
+    parser.add_argument('--save-folder', type=str, required=True, default='tmp/datasets/DIV2K/train')
+    parser.add_argument('--n-thread', type=int, default=20, help='Thread number')
     parser.add_argument(
         '--compression_level',
         type=int,
@@ -87,7 +88,7 @@ if __name__ == '__main__':
               'A higher value means a smaller size and longer compression time. '
               'Use 0 for faster CPU decompression. Default: 3, same in cv2.'),
     )
-    parser.add_argument('--crop_size', type=int, default=128, help='Crop size')
+    parser.add_argument('--crop-size', type=int, default=128, help='Crop size')
     parser.add_argument('--step', type=int, default=64, help='Step for overlapped sliding window')
     parser.add_argument(
         '--thresh_size',
@@ -96,33 +97,10 @@ if __name__ == '__main__':
         help=('Threshold size. If the remaining portion at the edge of the image is smaller than thresh_size, '
               'that portion will be discarded and not included as a patch.'),
     )
+    parser.add_argument('--add-suffix', action='store_false', help='Add suffix to save folder')
+    parser.add_argument('--allow-exist', action='store_true', help='Add sub-images to existed folder')
     args = parser.parse_args()
 
-    if args.dataset == 'DIV2K':
-        args.input_folder = 'datasets/DIV2K/train'
-        args.save_folder = f'tmp/datasets/DIV2K/train_size{args.crop_size}_step{args.step}_thresh{args.thresh_size}'
-        extract_subimages()
-
-        args.input_folder = 'datasets/DIV2K/train_BPG_QP37'
-        args.save_folder = ('tmp/datasets/DIV2K/train_BPG_QP37_'
-                            f'size{args.crop_size}_step{args.step}_thresh{args.thresh_size}')
-        extract_subimages()
-
-    elif args.dataset == 'DF2K':
-        args.input_folder = 'datasets/DIV2K/train'
-        args.save_folder = f'tmp/datasets/DF2K/train_size{args.crop_size}_step{args.step}_thresh{args.thresh_size}'
-        extract_subimages()
-
-        args.input_folder = 'datasets/Flickr2K'
-        args.save_folder = f'tmp/datasets/DF2K/train_size{args.crop_size}_step{args.step}_thresh{args.thresh_size}'
-        extract_subimages(allow_exist=True)
-
-        args.input_folder = 'datasets/DIV2K/train_BPG_QP37'
-        args.save_folder = ('tmp/datasets/DF2K/train_BPG_QP37_'
-                            f'size{args.crop_size}_step{args.step}_thresh{args.thresh_size}')
-        extract_subimages()
-
-        args.input_folder = 'datasets/Flickr2K_BPG_QP37'
-        args.save_folder = ('tmp/datasets/DF2K/train_BPG_QP37_'
-                            f'size{args.crop_size}_step{args.step}_thresh{args.thresh_size}')
-        extract_subimages(allow_exist=True)
+    if args.add_suffix:
+        args.save_folder = f'{args.save_folder}_size{args.crop_size}_step{args.step}_thresh{args.thresh_size}'
+    extract_subimages(allow_exist=args.allow_exist)

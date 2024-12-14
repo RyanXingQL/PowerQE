@@ -177,10 +177,17 @@ Run for the DIV2K dataset:
 ```bash
 conda activate pqe
 
-python scripts/data_preparation/extract_subimages.py --dataset DIV2K
+python scripts/data_preparation/extract_subimages.py --input-folder 'datasets/DIV2K/train' --save-folder 'tmp/datasets/DIV2K/train'
+python scripts/data_preparation/extract_subimages.py --input-folder 'datasets/DIV2K/train_BPG_QP37' --save-folder 'tmp/datasets/DIV2K/train_BPG_QP37'
 
-python scripts/data_preparation/create_lmdb.py --input_folder "tmp/datasets/DIV2K/train_size128_step64_thresh0" --lmdb_path "datasets/DIV2K/train_size128_step64_thresh0.lmdb"
-python scripts/data_preparation/create_lmdb.py --input_folder "tmp/datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0" --lmdb_path "datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0.lmdb"
+# DF2K
+#python scripts/data_preparation/extract_subimages.py --input-folder 'datasets/DIV2K/train' --save-folder 'tmp/datasets/DF2K/train'
+#python scripts/data_preparation/extract_subimages.py --input-folder 'datasets/Flickr2K' --save-folder 'tmp/datasets/DF2K/train' --allow-exist
+#python scripts/data_preparation/extract_subimages.py --input-folder 'datasets/DIV2K/train_BPG_QP37' --save-folder 'tmp/datasets/DF2K/train_BPG_QP37'
+#python scripts/data_preparation/extract_subimages.py --input-folder 'datasets/Flickr2K_BPG_QP37' --save-folder 'tmp/datasets/DF2K/train_BPG_QP37' --allow-exist
+
+python scripts/data_preparation/create_lmdb.py --input_folder 'tmp/datasets/DIV2K/train_size128_step64_thresh0' --lmdb_path 'datasets/DIV2K/train_size128_step64_thresh0.lmdb'
+python scripts/data_preparation/create_lmdb.py --input_folder 'tmp/datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0' --lmdb_path 'datasets/DIV2K/train_BPG_QP37_size128_step64_thresh0.lmdb'
 ```
 
 Resulting file tree:
